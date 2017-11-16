@@ -1,0 +1,92 @@
+package com.example.Config;
+
+
+
+import com.example.Services.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+
+    @Autowired
+    private UserDetailsService userDetailsService;
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return super.userDetailsService();
+    }
+
+
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth
+                .eraseCredentials(true)
+                .userDetailsService(userDetailsService)
+                .passwordEncoder(passwordEncoder());
+    }
+
+
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+                    .authorizeRequests()
+                    .antMatchers("/", "/login", "/users/registration").permitAll()
+                    .anyRequest().authenticated()
+                .and()
+                    .formLogin()
+                    .loginPage("/login")
+                    .defaultSuccessUrl("/welcome")
+                    .successForwardUrl("/welcome")
+                    .failureForwardUrl("/login?error")
+                    .usernameParameter("username")
+                    .passwordParameter("password")
+                    .loginProcessingUrl("/login")
+                    .permitAll()
+                .and()
+                    .logout()
+                    .permitAll()
+                    .logoutUrl("/logout")
+                    .logoutSuccessUrl("/login?logout");
+
+        http.authorizeRequests()
+                .antMatchers("/users/*", "/users", "/welcome", "/hello").access("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
+                //.antMatchers("/users/*", "/users", "/hello").access("hasRole('ROLE_ADMIN')")
+                .and().formLogin().defaultSuccessUrl("/", false);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}

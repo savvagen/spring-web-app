@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <title>Spring Security Example</title>
+</head>
+<body>
+<form action="#" th:action="@{/users/registration}" th:object="${user}" method="post">
+    <p>User Name</p>
+    <input placeholder="Entrer First Name" th:field="*{username}"  type="text"/>
+    <p th:if="${#fields.hasErrors('username')}" th:errors="*{username}"/>
+    <p>Email</p>
+    <input placeholder="Entrer Email Address" th:field="*{email}" type="email"/>
+    <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}"/>
+    <p>Password</p>
+    <input placeholder="Entrer Password" name="password" th:field="*{password}" type="password"/>
+    <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}"/>
+    <p>Confirm Password</p>
+    <input placeholder="Confirm your password" type="password" th:field="*{confirmPassword}"/>
+    <p th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"/>
+    <p></p>
+    <button type="submit">Submit</button>
+</form>
+<p></p>
+<tr>
+    <td><a href="home.html" th:href="@{/}">Back To Home</a></td>
+    <td><a href="usersList.html" th:href="@{/login}">Login</a> </td>
+</tr>
+<p></p>
+</body>
+</html>
